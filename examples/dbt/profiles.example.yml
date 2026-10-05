@@ -1,0 +1,11 @@
+flightcheck_demo:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth
+      project: "{{ env_var('FLIGHTCHECK_DEV_PROJECT') }}"
+      dataset: flightcheck_demo
+      location: "{{ env_var('FLIGHTCHECK_BQ_LOCATION') }}"
+      threads: 2
+      job_execution_timeout_seconds: 120

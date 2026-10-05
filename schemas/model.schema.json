@@ -1,0 +1,262 @@
+{
+  "$defs": {
+    "Column": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Name",
+          "type": "string"
+        },
+        "data_type": {
+          "enum": [
+            "string",
+            "int64",
+            "float64",
+            "numeric",
+            "bignumeric",
+            "bool",
+            "date",
+            "timestamp",
+            "datetime"
+          ],
+          "title": "Data Type",
+          "type": "string"
+        },
+        "description": {
+          "minLength": 3,
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "data_type",
+        "description"
+      ],
+      "title": "Column",
+      "type": "object"
+    },
+    "DimensionRef": {
+      "additionalProperties": false,
+      "properties": {
+        "column": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Column",
+          "type": "string"
+        },
+        "model": {
+          "pattern": "^dim_[a-z0-9_]+$",
+          "title": "Model",
+          "type": "string"
+        },
+        "key": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Key",
+          "type": "string"
+        }
+      },
+      "required": [
+        "column",
+        "model",
+        "key"
+      ],
+      "title": "DimensionRef",
+      "type": "object"
+    },
+    "Measure": {
+      "additionalProperties": false,
+      "properties": {
+        "column": {
+          "title": "Column",
+          "type": "string"
+        },
+        "aggregation": {
+          "enum": [
+            "sum",
+            "count",
+            "min",
+            "max",
+            "ratio_of_sums",
+            "last_value",
+            "none"
+          ],
+          "title": "Aggregation",
+          "type": "string"
+        },
+        "additivity": {
+          "enum": [
+            "additive",
+            "semi_additive",
+            "non_additive"
+          ],
+          "title": "Additivity",
+          "type": "string"
+        },
+        "unit": {
+          "minLength": 1,
+          "title": "Unit",
+          "type": "string"
+        },
+        "excluded_dimensions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Excluded Dimensions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "column",
+        "aggregation",
+        "additivity",
+        "unit"
+      ],
+      "title": "Measure",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "pattern": "^(fct|dim|bridge)_[a-z0-9_]+$",
+      "title": "Name",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "fact",
+        "dimension",
+        "bridge"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "business_process": {
+      "minLength": 5,
+      "title": "Business Process",
+      "type": "string"
+    },
+    "grain": {
+      "minLength": 15,
+      "title": "Grain",
+      "type": "string"
+    },
+    "keys": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Keys",
+      "type": "array"
+    },
+    "owner": {
+      "minLength": 3,
+      "title": "Owner",
+      "type": "string"
+    },
+    "source_model": {
+      "pattern": "^(stg|int)_[a-z0-9_]+$",
+      "title": "Source Model",
+      "type": "string"
+    },
+    "columns": {
+      "items": {
+        "$ref": "#/$defs/Column"
+      },
+      "minItems": 1,
+      "title": "Columns",
+      "type": "array"
+    },
+    "fact_type": {
+      "anyOf": [
+        {
+          "enum": [
+            "transaction",
+            "periodic_snapshot",
+            "accumulating_snapshot"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Fact Type"
+    },
+    "measures": {
+      "items": {
+        "$ref": "#/$defs/Measure"
+      },
+      "title": "Measures",
+      "type": "array"
+    },
+    "dimensions": {
+      "items": {
+        "$ref": "#/$defs/DimensionRef"
+      },
+      "title": "Dimensions",
+      "type": "array"
+    },
+    "scd_type": {
+      "anyOf": [
+        {
+          "enum": [
+            1,
+            2
+          ],
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Scd Type"
+    },
+    "business_keys": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Business Keys",
+      "type": "array"
+    },
+    "late_arrival_policy": {
+      "minLength": 10,
+      "title": "Late Arrival Policy",
+      "type": "string"
+    },
+    "delete_policy": {
+      "minLength": 10,
+      "title": "Delete Policy",
+      "type": "string"
+    },
+    "allocation_policy": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Allocation Policy"
+    }
+  },
+  "required": [
+    "name",
+    "kind",
+    "business_process",
+    "grain",
+    "keys",
+    "owner",
+    "source_model",
+    "columns",
+    "late_arrival_policy",
+    "delete_policy"
+  ],
+  "title": "ModelSpec",
+  "type": "object"
+}

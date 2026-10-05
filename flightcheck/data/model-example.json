@@ -1,0 +1,64 @@
+{
+  "name": "fct_operation_event",
+  "kind": "fact",
+  "business_process": "Manufacturing operation execution",
+  "grain": "One row per immutable operation completion event, identified by event_id.",
+  "keys": [
+    "event_id"
+  ],
+  "owner": "manufacturing-data-owner",
+  "source_model": "int_operation_events",
+  "fact_type": "transaction",
+  "columns": [
+    {
+      "name": "event_id",
+      "data_type": "string",
+      "description": "Immutable operation event identifier"
+    },
+    {
+      "name": "work_order_key",
+      "data_type": "string",
+      "description": "Conformed work order surrogate key"
+    },
+    {
+      "name": "occurred_at",
+      "data_type": "timestamp",
+      "description": "Event timestamp in UTC"
+    },
+    {
+      "name": "duration_seconds",
+      "data_type": "numeric",
+      "description": "Elapsed operation duration in seconds"
+    },
+    {
+      "name": "cost_usd",
+      "data_type": "numeric",
+      "description": "Operation cost in USD at the event exchange rate"
+    }
+  ],
+  "measures": [
+    {
+      "column": "duration_seconds",
+      "aggregation": "sum",
+      "additivity": "additive",
+      "unit": "seconds",
+      "excluded_dimensions": []
+    },
+    {
+      "column": "cost_usd",
+      "aggregation": "sum",
+      "additivity": "additive",
+      "unit": "USD",
+      "excluded_dimensions": []
+    }
+  ],
+  "dimensions": [
+    {
+      "column": "work_order_key",
+      "model": "dim_work_order",
+      "key": "work_order_key"
+    }
+  ],
+  "late_arrival_policy": "Accept late events; restate the affected partition after replay tests.",
+  "delete_policy": "Preserve events and append reversal events; never silently delete history."
+}

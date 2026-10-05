@@ -1,0 +1,10 @@
+.git
+.venv
+.flightcheck
+__pycache__
+*.egg-info
+.pytest_cache
+.env
+private
+node_modules
+docs/screenshots

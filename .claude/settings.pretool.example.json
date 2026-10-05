@@ -1,0 +1,12 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "mcp__bigquery__query",
+        "hooks": [
+          {"type": "command", "command": "python3 \"$CLAUDE_PROJECT_DIR/scripts/claude_hook.py\"", "timeout": 15}
+        ]
+      }
+    ]
+  }
+}

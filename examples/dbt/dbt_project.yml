@@ -1,0 +1,27 @@
+name: flightcheck_demo
+version: 1.0.0
+config-version: 2
+profile: flightcheck_demo
+model-paths:
+- models
+seed-paths:
+- seeds
+test-paths:
+- tests
+models:
+  flightcheck_demo:
+    staging:
+      +schema: staging
+      +materialized: view
+    intermediate:
+      +schema: intermediate
+      +materialized: view
+    marts:
+      +schema: mart
+      +materialized: table
+    serving:
+      +schema: serving
+      +materialized: view
+seeds:
+  flightcheck_demo:
+    +schema: raw

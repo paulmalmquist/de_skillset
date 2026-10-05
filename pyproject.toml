@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "de-skillset"
+version = "0.1.0"
+description = "Flightcheck: evidence-first data engineering skills, protocols, and executable gates"
+requires-python = ">=3.11"
+dependencies = ["fastapi==0.142.2", "uvicorn==0.54.0", "sqlglot==30.21.0", "pydantic==2.13.5", "PyYAML==6.0.3"]
+
+[project.optional-dependencies]
+dev = ["pytest==9.1.1", "httpx==0.28.1"]
+bigquery = ["google-cloud-bigquery>=3.31,<4"]
+
+[project.scripts]
+flightcheck = "flightcheck.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["flightcheck*"]
+
+[tool.setuptools.package-data]
+flightcheck = ["web/*", "data/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

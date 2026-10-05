@@ -1,0 +1,246 @@
+{
+  "metadata": {
+    "dbt_schema_version": "https://schemas.getdbt.com/dbt/manifest/v12.json",
+    "generated_at": "2026-10-05T12:00:00Z",
+    "project_name": "synthetic_manufacturing"
+  },
+  "sources": {
+    "source.demo.mes.operation_events": {
+      "unique_id": "source.demo.mes.operation_events",
+      "name": "operation_events",
+      "resource_type": "source",
+      "depends_on": {
+        "nodes": []
+      },
+      "database": "synthetic",
+      "schema": "raw",
+      "identifier": "operation_events"
+    }
+  },
+  "nodes": {
+    "model.demo.stg_operation_events": {
+      "unique_id": "model.demo.stg_operation_events",
+      "name": "stg_operation_events",
+      "resource_type": "model",
+      "original_file_path": "models/staging/stg_operation_events.sql",
+      "access": "protected",
+      "config": {
+        "enabled": true,
+        "meta": {
+          "flightcheck": {
+            "layer": "staging",
+            "owner": "example-data-owner",
+            "grain": "One row per operation event",
+            "keys": [
+              "event_id"
+            ]
+          }
+        },
+        "contract": {
+          "enforced": false
+        }
+      },
+      "depends_on": {
+        "nodes": [
+          "source.demo.mes.operation_events"
+        ]
+      }
+    },
+    "model.demo.int_operation_events": {
+      "unique_id": "model.demo.int_operation_events",
+      "name": "int_operation_events",
+      "resource_type": "model",
+      "original_file_path": "models/intermediate/int_operation_events.sql",
+      "access": "protected",
+      "config": {
+        "enabled": true,
+        "meta": {
+          "flightcheck": {
+            "layer": "intermediate",
+            "owner": "example-data-owner",
+            "grain": "One row per operation event",
+            "keys": [
+              "event_id"
+            ]
+          }
+        },
+        "contract": {
+          "enforced": false
+        }
+      },
+      "depends_on": {
+        "nodes": [
+          "model.demo.stg_operation_events"
+        ]
+      }
+    },
+    "model.demo.dim_work_order": {
+      "unique_id": "model.demo.dim_work_order",
+      "name": "dim_work_order",
+      "resource_type": "model",
+      "original_file_path": "models/mart/dim_work_order.sql",
+      "access": "public",
+      "config": {
+        "enabled": true,
+        "meta": {
+          "flightcheck": {
+            "layer": "mart",
+            "owner": "example-data-owner",
+            "grain": "One row per work order",
+            "keys": [
+              "work_order_key"
+            ]
+          }
+        },
+        "contract": {
+          "enforced": true
+        }
+      },
+      "depends_on": {
+        "nodes": [
+          "model.demo.stg_operation_events"
+        ]
+      }
+    },
+    "test.demo.unique_dim_work_order": {
+      "unique_id": "test.demo.unique_dim_work_order",
+      "name": "unique_dim_work_order",
+      "resource_type": "test",
+      "test_metadata": {
+        "name": "unique"
+      },
+      "depends_on": {
+        "nodes": [
+          "model.demo.dim_work_order"
+        ]
+      }
+    },
+    "model.demo.fct_operation_event": {
+      "unique_id": "model.demo.fct_operation_event",
+      "name": "fct_operation_event",
+      "resource_type": "model",
+      "original_file_path": "models/mart/fct_operation_event.sql",
+      "access": "public",
+      "config": {
+        "enabled": true,
+        "meta": {
+          "flightcheck": {
+            "layer": "mart",
+            "owner": "example-data-owner",
+            "grain": "One row per operation event",
+            "keys": [
+              "event_id"
+            ]
+          }
+        },
+        "contract": {
+          "enforced": true
+        }
+      },
+      "depends_on": {
+        "nodes": [
+          "model.demo.int_operation_events",
+          "model.demo.dim_work_order"
+        ]
+      }
+    },
+    "test.demo.unique_fct_operation_event": {
+      "unique_id": "test.demo.unique_fct_operation_event",
+      "name": "unique_fct_operation_event",
+      "resource_type": "test",
+      "test_metadata": {
+        "name": "unique"
+      },
+      "depends_on": {
+        "nodes": [
+          "model.demo.fct_operation_event"
+        ]
+      }
+    },
+    "model.demo.rpt_operations": {
+      "unique_id": "model.demo.rpt_operations",
+      "name": "rpt_operations",
+      "resource_type": "model",
+      "original_file_path": "models/serving/rpt_operations.sql",
+      "access": "public",
+      "config": {
+        "enabled": true,
+        "meta": {
+          "flightcheck": {
+            "layer": "serving",
+            "owner": "example-data-owner",
+            "grain": "One row per operation event",
+            "keys": [
+              "event_id"
+            ]
+          }
+        },
+        "contract": {
+          "enforced": true
+        }
+      },
+      "depends_on": {
+        "nodes": [
+          "model.demo.fct_operation_event"
+        ]
+      }
+    },
+    "test.demo.unique_rpt_operations": {
+      "unique_id": "test.demo.unique_rpt_operations",
+      "name": "unique_rpt_operations",
+      "resource_type": "test",
+      "test_metadata": {
+        "name": "unique"
+      },
+      "depends_on": {
+        "nodes": [
+          "model.demo.rpt_operations"
+        ]
+      }
+    }
+  },
+  "exposures": {
+    "exposure.demo.power_bi_operations": {
+      "unique_id": "exposure.demo.power_bi_operations",
+      "name": "power_bi_operations",
+      "resource_type": "exposure",
+      "type": "dashboard",
+      "owner": {
+        "name": "example-report-owner"
+      },
+      "depends_on": {
+        "nodes": [
+          "model.demo.int_operation_events"
+        ]
+      }
+    },
+    "exposure.demo.grafana_cycle_time": {
+      "unique_id": "exposure.demo.grafana_cycle_time",
+      "name": "grafana_cycle_time",
+      "resource_type": "exposure",
+      "type": "dashboard",
+      "owner": {
+        "name": "example-report-owner"
+      },
+      "depends_on": {
+        "nodes": [
+          "model.demo.stg_operation_events"
+        ]
+      }
+    },
+    "exposure.demo.dreamcatcher_builds": {
+      "unique_id": "exposure.demo.dreamcatcher_builds",
+      "name": "dreamcatcher_builds",
+      "resource_type": "exposure",
+      "type": "dashboard",
+      "owner": {
+        "name": "example-report-owner"
+      },
+      "depends_on": {
+        "nodes": [
+          "model.demo.rpt_operations"
+        ]
+      }
+    }
+  }
+}

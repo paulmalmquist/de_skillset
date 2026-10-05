@@ -1,0 +1,8 @@
+-- _ingested_at must map to your real ingestion watermark, not a guessed timestamp.
+SELECT
+    MAX(_ingested_at) AS ingestion_watermark,
+    MAX(occurred_at) AS newest_event_time,
+    MIN(occurred_at) AS oldest_event_time,
+    COUNT(*) AS population_rows
+FROM `{{ relation }}`
+WHERE occurred_at >= @window_start AND occurred_at < @window_end

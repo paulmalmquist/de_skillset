@@ -1,0 +1,113 @@
+[
+  {
+    "name": "01 \u00b7 source operations",
+    "rows": [
+      {
+        "event_id": "OP-001"
+      },
+      {
+        "event_id": "OP-002"
+      },
+      {
+        "event_id": "OP-003"
+      },
+      {
+        "event_id": "OP-004"
+      },
+      {
+        "event_id": "OP-005"
+      },
+      {
+        "event_id": "OP-006"
+      }
+    ]
+  },
+  {
+    "name": "02 \u00b7 assignment join",
+    "rows": [
+      {
+        "event_id": "OP-001",
+        "work_order_id": "WO-101",
+        "status": "complete",
+        "cost": 120.0
+      },
+      {
+        "event_id": "OP-002",
+        "work_order_id": "WO-101",
+        "status": "complete",
+        "cost": 85.0
+      },
+      {
+        "event_id": "OP-003",
+        "work_order_id": "WO-102",
+        "status": "complete",
+        "cost": 240.0
+      },
+      {
+        "event_id": "OP-003",
+        "work_order_id": "WO-102",
+        "status": "complete",
+        "cost": 240.0
+      },
+      {
+        "event_id": "OP-004",
+        "work_order_id": "WO-103",
+        "status": "open",
+        "cost": 45.0
+      },
+      {
+        "event_id": "OP-005",
+        "work_order_id": "WO-104",
+        "status": "complete",
+        "cost": 170.0
+      },
+      {
+        "event_id": "OP-006",
+        "work_order_id": "WO-104",
+        "status": "complete",
+        "cost": 95.0
+      }
+    ]
+  },
+  {
+    "name": "03 \u00b7 status filter + cost",
+    "rows": [
+      {
+        "event_id": "OP-001",
+        "work_order_id": "WO-101",
+        "status": "complete",
+        "cost": 120.0
+      },
+      {
+        "event_id": "OP-002",
+        "work_order_id": "WO-101",
+        "status": "complete",
+        "cost": 95.0
+      },
+      {
+        "event_id": "OP-003",
+        "work_order_id": "WO-102",
+        "status": "complete",
+        "cost": 240.0
+      },
+      {
+        "event_id": "OP-003",
+        "work_order_id": "WO-102",
+        "status": "complete",
+        "cost": 240.0
+      },
+      {
+        "event_id": "OP-005",
+        "work_order_id": "WO-104",
+        "status": "complete",
+        "cost": 170.0
+      },
+      {
+        "event_id": "OP-006",
+        "work_order_id": "WO-104",
+        "status": "complete",
+        "cost": 95.0
+      }
+    ]
+  }
+]

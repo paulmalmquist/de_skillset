@@ -1,0 +1,152 @@
+version: 2
+models:
+- name: stg_work_orders
+  description: Synthetic worked example; validate environment before executing.
+  config:
+    meta:
+      flightcheck:
+        layer: staging
+        owner: synthetic-example-owner
+        grain: One row per work order
+        keys:
+        - work_order_id
+  columns:
+  - name: work_order_id
+    data_tests:
+    - not_null
+    - unique
+- name: stg_operation_events
+  description: Synthetic worked example; validate environment before executing.
+  config:
+    meta:
+      flightcheck:
+        layer: staging
+        owner: synthetic-example-owner
+        grain: One row per immutable operation completion event
+        keys:
+        - event_id
+  columns:
+  - name: event_id
+    data_tests:
+    - not_null
+    - unique
+- name: int_operation_events
+  description: Synthetic worked example; validate environment before executing.
+  config:
+    meta:
+      flightcheck:
+        layer: intermediate
+        owner: synthetic-example-owner
+        grain: One row per immutable operation completion event
+        keys:
+        - event_id
+  columns:
+  - name: event_id
+    data_tests:
+    - not_null
+    - unique
+- name: dim_work_order
+  description: Synthetic worked example; validate environment before executing.
+  config:
+    meta:
+      flightcheck:
+        layer: mart
+        owner: synthetic-example-owner
+        grain: One row per work order
+        keys:
+        - work_order_key
+    contract:
+      enforced: true
+  access: public
+  columns:
+  - name: work_order_key
+    data_type: string
+    description: work order key
+    data_tests:
+    - not_null
+    - unique
+  - name: work_order_id
+    data_type: string
+    description: work order id
+  - name: part_number
+    data_type: string
+    description: part number
+  - name: part_revision
+    data_type: string
+    description: part revision
+- name: fct_operation_event
+  description: Synthetic worked example; validate environment before executing.
+  config:
+    meta:
+      flightcheck:
+        layer: mart
+        owner: synthetic-example-owner
+        grain: One row per immutable operation completion event
+        keys:
+        - event_id
+    contract:
+      enforced: true
+  access: public
+  columns:
+  - name: event_id
+    data_type: string
+    description: event id
+    data_tests:
+    - not_null
+    - unique
+  - name: work_order_key
+    data_type: string
+    description: work order key
+    data_tests:
+    - not_null
+    - relationships:
+        arguments:
+          to: ref('dim_work_order')
+          field: work_order_key
+  - name: occurred_at
+    data_type: timestamp
+    description: occurred at
+  - name: duration_seconds
+    data_type: numeric
+    description: duration seconds
+  - name: cost_usd
+    data_type: numeric
+    description: cost usd
+- name: rpt_operations
+  description: Synthetic worked example; validate environment before executing.
+  config:
+    meta:
+      flightcheck:
+        layer: serving
+        owner: synthetic-example-owner
+        grain: One row per immutable operation completion event
+        keys:
+        - event_id
+    contract:
+      enforced: true
+  access: public
+  columns:
+  - name: event_id
+    data_type: string
+    description: event id
+    data_tests:
+    - not_null
+    - unique
+  - name: work_order_id
+    data_type: string
+    description: work order id
+  - name: part_number
+    data_type: string
+    description: part number
+  - name: part_revision
+    data_type: string
+    description: part revision
+  - name: occurred_at
+    data_type: timestamp
+    description: occurred at
+  - name: duration_seconds
+    data_type: numeric
+    description: duration seconds
+  - name: cost_usd
+    data_type: numeric
+    description: cost usd

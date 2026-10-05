@@ -1,0 +1,6 @@
+-- Review identifiers; validate source context/freshness before interpreting results.
+SELECT event_id, COUNT(*) AS multiplicity
+FROM `{{ relation }}`
+WHERE occurred_at >= @window_start AND occurred_at < @window_end
+GROUP BY event_id
+HAVING COUNT(*) > 1 OR event_id IS NULL

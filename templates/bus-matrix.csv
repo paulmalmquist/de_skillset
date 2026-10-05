@@ -1,0 +1,4 @@
+business_process,declared_grain,date,work_order,part_revision,material_lot,machine,facility,owner,status
+operation_execution,one row per operation event,event date,conformed key,as-of revision,where applicable,conformed key,conformed key,TO_CONFIGURE,proposed example
+inspection,one row per inspection attempt,inspection date,conformed key,inspected revision,inspected lot,where applicable,conformed key,TO_CONFIGURE,proposed example
+inventory_snapshot,one row per item location and date,snapshot date,not applicable,conformed revision,conformed lot,not applicable,conformed key,TO_CONFIGURE,proposed example

@@ -1,0 +1,38 @@
+version: '1'
+dialect: bigquery
+relation_layers:
+  '*.raw.*': source
+  '*.staging.*': staging
+  '*.intermediate.*': intermediate
+  '*.mart.*': mart
+  '*.serving.*': serving
+  raw.*: source
+  staging.*: staging
+  intermediate.*: intermediate
+  mart.*: mart
+  serving.*: serving
+  '*.flightcheck_demo_raw.*': source
+  '*.flightcheck_demo_staging.*': staging
+  '*.flightcheck_demo_intermediate.*': intermediate
+  '*.flightcheck_demo_mart.*': mart
+  '*.flightcheck_demo_serving.*': serving
+allowed_dependencies:
+  source: []
+  staging:
+  - source
+  intermediate:
+  - staging
+  - intermediate
+  mart:
+  - staging
+  - intermediate
+  - mart
+  serving:
+  - mart
+  - serving
+  consumer:
+  - mart
+  - serving
+max_freshness_hours: 24.0
+max_evidence_age_hours: 4.0
+exceptions: []

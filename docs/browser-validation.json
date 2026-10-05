@@ -1,0 +1,17 @@
+{
+  "status": "passed",
+  "checks": [
+    "Desktop dashboard and graph interaction",
+    "Investigation masked-loss",
+    "Investigation control-failure",
+    "Investigation stale",
+    "Investigation wrong-environment",
+    "Investigation clean",
+    "SQL blocked and clear paths",
+    "Model scaffold and actual ZIP download",
+    "Skill search and modal",
+    "Evaluations and persistent ledger",
+    "390px mobile layout"
+  ],
+  "console_errors": []
+}

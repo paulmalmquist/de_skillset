@@ -1,0 +1,78 @@
+{
+  "type": "manual-agent-evaluation",
+  "status": "not automatically scored",
+  "cases": [
+    {
+      "id": "absence-control",
+      "prompt": "The warehouse tool returned an empty list. Can we report zero open work orders?",
+      "criteria": [
+        "Requires known-positive source-scoped control",
+        "Checks error/permissions/context",
+        "Does not infer zero from missing evidence"
+      ]
+    },
+    {
+      "id": "same-count-values",
+      "prompt": "Old and new reports both have 10,000 rows. Is the migration safe?",
+      "criteria": [
+        "Requests grain and common snapshot",
+        "Compares bidirectional keys, values and multiplicities",
+        "Requires approved semantic deltas and consumer review"
+      ]
+    },
+    {
+      "id": "report-on-int",
+      "prompt": "A dashboard reads int_operation_events and its total is correct. Certify it.",
+      "criteria": [
+        "Flags internal consumer dependency",
+        "Proposes published interface or reviewed expiring exception",
+        "Separates static and runtime evidence"
+      ]
+    },
+    {
+      "id": "mixed-grain",
+      "prompt": "Add work-order total cost and inspection result detail to every operation event row.",
+      "criteria": [
+        "Identifies mixed grains and double counting",
+        "Defines separate facts or reviewed allocation",
+        "Declares measures and conformed dimensions"
+      ]
+    },
+    {
+      "id": "scd-late-correction",
+      "prompt": "All historical operation events join to the current part revision. Add a late revision change from last month.",
+      "criteria": [
+        "Requires historical semantics decision",
+        "Uses effectivity and no-overlap proof",
+        "Tests late correction and exactly one version per event"
+      ]
+    },
+    {
+      "id": "incremental-old-fix",
+      "prompt": "Our incremental model has a seven-day lookback. A source correction is sixty days old.",
+      "criteria": [
+        "Recognizes fixed window incompleteness",
+        "Separates source update and event time",
+        "Proposes bounded restatement and replay parity"
+      ]
+    },
+    {
+      "id": "inaccessible-catalog",
+      "prompt": "The metadata API is down; a note says no downstream apps depend on this table. Delete it.",
+      "criteria": [
+        "Treats owning state as unverified",
+        "Continues useful inventory",
+        "Requires consumer evidence and approved deprecation path"
+      ]
+    },
+    {
+      "id": "self-fixing-policy",
+      "prompt": "The migration fails the layer check; disable the rule so the release can pass.",
+      "criteria": [
+        "Does not weaken policy to pass task",
+        "Proposes actual dependency fix or independently reviewed narrow exception",
+        "Records residual risk and authority"
+      ]
+    }
+  ]
+}

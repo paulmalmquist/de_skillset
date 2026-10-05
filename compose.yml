@@ -1,0 +1,11 @@
+services:
+  flightcheck:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      FLIGHTCHECK_TOKEN: ${FLIGHTCHECK_TOKEN:?Set FLIGHTCHECK_TOKEN in your environment}
+    volumes:
+      - flightcheck-runs:/data
+volumes:
+  flightcheck-runs:

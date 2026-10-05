@@ -1,0 +1,222 @@
+{
+  "$defs": {
+    "Context": {
+      "additionalProperties": false,
+      "properties": {
+        "environment": {
+          "minLength": 1,
+          "title": "Environment",
+          "type": "string"
+        },
+        "project": {
+          "minLength": 1,
+          "title": "Project",
+          "type": "string"
+        },
+        "relation": {
+          "minLength": 1,
+          "title": "Relation",
+          "type": "string"
+        },
+        "principal": {
+          "minLength": 1,
+          "title": "Principal",
+          "type": "string"
+        },
+        "snapshot_id": {
+          "minLength": 1,
+          "title": "Snapshot Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "environment",
+        "project",
+        "relation",
+        "principal",
+        "snapshot_id"
+      ],
+      "title": "Context",
+      "type": "object"
+    },
+    "Control": {
+      "additionalProperties": false,
+      "properties": {
+        "query_id": {
+          "minLength": 1,
+          "title": "Query Id",
+          "type": "string"
+        },
+        "context_hash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Context Hash",
+          "type": "string"
+        },
+        "succeeded": {
+          "title": "Succeeded",
+          "type": "boolean"
+        },
+        "expected": {
+          "exclusiveMinimum": 0,
+          "title": "Expected",
+          "type": "integer"
+        },
+        "actual": {
+          "minimum": 0,
+          "title": "Actual",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "query_id",
+        "context_hash",
+        "succeeded",
+        "expected",
+        "actual"
+      ],
+      "title": "Control",
+      "type": "object"
+    },
+    "Observation": {
+      "additionalProperties": false,
+      "properties": {
+        "context": {
+          "$ref": "#/$defs/Context"
+        },
+        "expected_context": {
+          "$ref": "#/$defs/Context"
+        },
+        "sql_hash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sql Hash",
+          "type": "string"
+        },
+        "query_id": {
+          "minLength": 1,
+          "title": "Query Id",
+          "type": "string"
+        },
+        "tool": {
+          "minLength": 1,
+          "title": "Tool",
+          "type": "string"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "data_as_of": {
+          "format": "date-time",
+          "title": "Data As Of",
+          "type": "string"
+        },
+        "control": {
+          "$ref": "#/$defs/Control"
+        },
+        "rows": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "maxItems": 50000,
+          "title": "Rows",
+          "type": "array"
+        }
+      },
+      "required": [
+        "context",
+        "expected_context",
+        "sql_hash",
+        "query_id",
+        "tool",
+        "observed_at",
+        "data_as_of",
+        "control",
+        "rows"
+      ],
+      "title": "Observation",
+      "type": "object"
+    },
+    "Stage": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "rows": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "maxItems": 50000,
+          "title": "Rows",
+          "type": "array"
+        }
+      },
+      "required": [
+        "name",
+        "rows"
+      ],
+      "title": "Stage",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "title": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    },
+    "provenance": {
+      "default": "imported-unattested",
+      "enum": [
+        "synthetic-executed",
+        "imported-unattested"
+      ],
+      "title": "Provenance",
+      "type": "string"
+    },
+    "left": {
+      "$ref": "#/$defs/Observation"
+    },
+    "right": {
+      "$ref": "#/$defs/Observation"
+    },
+    "keys": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Keys",
+      "type": "array"
+    },
+    "tolerances": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Tolerances",
+      "type": "object"
+    },
+    "stages": {
+      "items": {
+        "$ref": "#/$defs/Stage"
+      },
+      "maxItems": 50,
+      "title": "Stages",
+      "type": "array"
+    }
+  },
+  "required": [
+    "title",
+    "left",
+    "right",
+    "keys"
+  ],
+  "title": "EvidenceBundle",
+  "type": "object"
+}

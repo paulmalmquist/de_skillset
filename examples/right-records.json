@@ -1,0 +1,38 @@
+[
+  {
+    "event_id": "OP-001",
+    "work_order_id": "WO-101",
+    "status": "complete",
+    "cost": 120.0
+  },
+  {
+    "event_id": "OP-002",
+    "work_order_id": "WO-101",
+    "status": "complete",
+    "cost": 95.0
+  },
+  {
+    "event_id": "OP-003",
+    "work_order_id": "WO-102",
+    "status": "complete",
+    "cost": 240.0
+  },
+  {
+    "event_id": "OP-003",
+    "work_order_id": "WO-102",
+    "status": "complete",
+    "cost": 240.0
+  },
+  {
+    "event_id": "OP-005",
+    "work_order_id": "WO-104",
+    "status": "complete",
+    "cost": 170.0
+  },
+  {
+    "event_id": "OP-006",
+    "work_order_id": "WO-104",
+    "status": "complete",
+    "cost": 95.0
+  }
+]

@@ -1,0 +1,253 @@
+{
+  "title": "Equal counts, dropped operation, duplicate join, changed cost",
+  "provenance": "synthetic-executed",
+  "left": {
+    "context": {
+      "environment": "dev",
+      "project": "synthetic-manufacturing",
+      "relation": "fixture.baseline",
+      "principal": "local-demo",
+      "snapshot_id": "fixture-v1"
+    },
+    "expected_context": {
+      "environment": "dev",
+      "project": "synthetic-manufacturing",
+      "relation": "fixture.baseline",
+      "principal": "local-demo",
+      "snapshot_id": "fixture-v1"
+    },
+    "sql_hash": "bc0b01f760dddec766551b8a08c6821154a0d95eb3d199e3f5fa2c1a9013d6a9",
+    "query_id": "sqlite-bc0b01f760dd",
+    "tool": "sqlite3",
+    "observed_at": "2026-10-05T20:57:58.119785Z",
+    "data_as_of": "2026-10-05T20:37:58.119785Z",
+    "control": {
+      "query_id": "sqlite-control-op001",
+      "context_hash": "7903a659cf88b3bce8528f88097568cf9e3dd2dc33190df3e75a5507a4f64df0",
+      "succeeded": true,
+      "expected": 1,
+      "actual": 1
+    },
+    "rows": [
+      {
+        "event_id": "OP-001",
+        "work_order_id": "WO-101",
+        "status": "complete",
+        "cost": 120.0
+      },
+      {
+        "event_id": "OP-002",
+        "work_order_id": "WO-101",
+        "status": "complete",
+        "cost": 85.0
+      },
+      {
+        "event_id": "OP-003",
+        "work_order_id": "WO-102",
+        "status": "complete",
+        "cost": 240.0
+      },
+      {
+        "event_id": "OP-004",
+        "work_order_id": "WO-103",
+        "status": "open",
+        "cost": 45.0
+      },
+      {
+        "event_id": "OP-005",
+        "work_order_id": "WO-104",
+        "status": "complete",
+        "cost": 170.0
+      },
+      {
+        "event_id": "OP-006",
+        "work_order_id": "WO-104",
+        "status": "complete",
+        "cost": 95.0
+      }
+    ]
+  },
+  "right": {
+    "context": {
+      "environment": "dev",
+      "project": "synthetic-manufacturing",
+      "relation": "fixture.candidate",
+      "principal": "local-demo",
+      "snapshot_id": "fixture-v1"
+    },
+    "expected_context": {
+      "environment": "dev",
+      "project": "synthetic-manufacturing",
+      "relation": "fixture.candidate",
+      "principal": "local-demo",
+      "snapshot_id": "fixture-v1"
+    },
+    "sql_hash": "fc325356284ba18db9f8c57e7796620efc44ca4df7d73f15aafcabf5f2bd28a1",
+    "query_id": "sqlite-fc325356284b",
+    "tool": "sqlite3",
+    "observed_at": "2026-10-05T20:57:58.119785Z",
+    "data_as_of": "2026-10-05T20:37:58.119785Z",
+    "control": {
+      "query_id": "sqlite-control-op001",
+      "context_hash": "8d7d88146661706b39744dfc9f6aaf11366d46f22c2aafea09a8b9d0ee53ec83",
+      "succeeded": true,
+      "expected": 1,
+      "actual": 1
+    },
+    "rows": [
+      {
+        "event_id": "OP-001",
+        "work_order_id": "WO-101",
+        "status": "complete",
+        "cost": 120.0
+      },
+      {
+        "event_id": "OP-002",
+        "work_order_id": "WO-101",
+        "status": "complete",
+        "cost": 95.0
+      },
+      {
+        "event_id": "OP-003",
+        "work_order_id": "WO-102",
+        "status": "complete",
+        "cost": 240.0
+      },
+      {
+        "event_id": "OP-003",
+        "work_order_id": "WO-102",
+        "status": "complete",
+        "cost": 240.0
+      },
+      {
+        "event_id": "OP-005",
+        "work_order_id": "WO-104",
+        "status": "complete",
+        "cost": 170.0
+      },
+      {
+        "event_id": "OP-006",
+        "work_order_id": "WO-104",
+        "status": "complete",
+        "cost": 95.0
+      }
+    ]
+  },
+  "keys": [
+    "event_id"
+  ],
+  "tolerances": {},
+  "stages": [
+    {
+      "name": "01 \u00b7 source operations",
+      "rows": [
+        {
+          "event_id": "OP-001"
+        },
+        {
+          "event_id": "OP-002"
+        },
+        {
+          "event_id": "OP-003"
+        },
+        {
+          "event_id": "OP-004"
+        },
+        {
+          "event_id": "OP-005"
+        },
+        {
+          "event_id": "OP-006"
+        }
+      ]
+    },
+    {
+      "name": "02 \u00b7 assignment join",
+      "rows": [
+        {
+          "event_id": "OP-001",
+          "work_order_id": "WO-101",
+          "status": "complete",
+          "cost": 120.0
+        },
+        {
+          "event_id": "OP-002",
+          "work_order_id": "WO-101",
+          "status": "complete",
+          "cost": 85.0
+        },
+        {
+          "event_id": "OP-003",
+          "work_order_id": "WO-102",
+          "status": "complete",
+          "cost": 240.0
+        },
+        {
+          "event_id": "OP-003",
+          "work_order_id": "WO-102",
+          "status": "complete",
+          "cost": 240.0
+        },
+        {
+          "event_id": "OP-004",
+          "work_order_id": "WO-103",
+          "status": "open",
+          "cost": 45.0
+        },
+        {
+          "event_id": "OP-005",
+          "work_order_id": "WO-104",
+          "status": "complete",
+          "cost": 170.0
+        },
+        {
+          "event_id": "OP-006",
+          "work_order_id": "WO-104",
+          "status": "complete",
+          "cost": 95.0
+        }
+      ]
+    },
+    {
+      "name": "03 \u00b7 status filter + cost",
+      "rows": [
+        {
+          "event_id": "OP-001",
+          "work_order_id": "WO-101",
+          "status": "complete",
+          "cost": 120.0
+        },
+        {
+          "event_id": "OP-002",
+          "work_order_id": "WO-101",
+          "status": "complete",
+          "cost": 95.0
+        },
+        {
+          "event_id": "OP-003",
+          "work_order_id": "WO-102",
+          "status": "complete",
+          "cost": 240.0
+        },
+        {
+          "event_id": "OP-003",
+          "work_order_id": "WO-102",
+          "status": "complete",
+          "cost": 240.0
+        },
+        {
+          "event_id": "OP-005",
+          "work_order_id": "WO-104",
+          "status": "complete",
+          "cost": 170.0
+        },
+        {
+          "event_id": "OP-006",
+          "work_order_id": "WO-104",
+          "status": "complete",
+          "cost": 95.0
+        }
+      ]
+    }
+  ]
+}

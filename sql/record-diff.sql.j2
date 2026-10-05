@@ -1,0 +1,29 @@
+-- Template: replace reviewed relation identifiers/column mappings before execution.
+-- First prove non-NULL unique event_id on BOTH sides. Duplicate joins invalidate this pairing.
+-- Use the same logical snapshot, UTC population window, identity and access policy.
+WITH baseline AS (
+    SELECT event_id, work_order_id, cost_usd
+    FROM `{{ baseline_relation }}`
+    WHERE occurred_at >= @window_start AND occurred_at < @window_end
+), candidate AS (
+    SELECT event_id, work_order_id, cost_usd
+    FROM `{{ candidate_relation }}`
+    WHERE occurred_at >= @window_start AND occurred_at < @window_end
+)
+SELECT
+    COALESCE(b.event_id, c.event_id) AS event_id,
+    CASE
+        WHEN b.event_id IS NULL THEN 'added_key'
+        WHEN c.event_id IS NULL THEN 'missing_key'
+        ELSE 'changed_values'
+    END AS difference_type,
+    b.work_order_id AS baseline_work_order_id,
+    c.work_order_id AS candidate_work_order_id,
+    b.cost_usd AS baseline_cost_usd,
+    c.cost_usd AS candidate_cost_usd
+FROM baseline b
+FULL OUTER JOIN candidate c ON b.event_id = c.event_id
+WHERE b.event_id IS NULL
+   OR c.event_id IS NULL
+   OR b.work_order_id IS DISTINCT FROM c.work_order_id
+   OR b.cost_usd IS DISTINCT FROM c.cost_usd
