@@ -22,11 +22,12 @@ Start the app on loopback. Verify desktop and mobile layouts and capture console
 2. Select a graph node; confirm owner/grain/impact details update.
 3. Run the masked-loss investigation; inspect missing, duplicate and changed-value witnesses.
 4. Run control-failure, stale and wrong-environment scenarios; confirm later gates are not run. Run clean; confirm ready-for-review, not certified.
-5. Audit the legacy query; then load and audit the published example. Import a manifest and verify findings/lineage update.
+5. Audit the legacy query; then load and audit the published example. Without an exact registration it must block with PUBLISHED_CONTRACT. A constant query can exercise the static-clear path. Import a manifest and verify findings/lineage update.
 6. Generate the Kimball model and download its ZIP; inspect the actual files. Break a grain key and confirm generation is blocked.
 7. Search skills, open a skill/protocol, copy its invocation and navigate back using keyboard.
 8. Run evaluations; verify results and actual run ledger entries. Refresh; confirm persistence. Export JSON and a Claude handoff.
 9. Repeat navigation on a 390px viewport; no page-wide horizontal overflow should occur.
+10. Import a current clean evidence bundle: control/freshness/authority must remain unverified, and the page must explain sample redaction. Truncate both sides without altering total_rows: matching subsets must show incomplete population coverage.
 
 `scripts/browser_smoke.cjs` automates the principal paths with Playwright when installed. Set `FLIGHTCHECK_URL` to the local server. It writes screenshots and a JSON result to ignored `.flightcheck/browser/`.
 

@@ -32,3 +32,6 @@ allowed_dependencies:
 max_freshness_hours: 24.0
 max_evidence_age_hours: 4.0
 exceptions: []
+# Exact registrations are required for standalone published consumers. Configure privately;
+# see docs/CANDIDATE-CI.md. Layer naming patterns are not publication approvals.
+published_contracts: {}

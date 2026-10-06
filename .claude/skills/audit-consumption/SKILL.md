@@ -16,6 +16,7 @@ Read `CLAUDE.md` and `config/policy.yml` at the repository root. Follow [the pro
 3. Inventory external report queries and warehouse view definitions missing from the manifest.
 4. Replace internal dependencies with a published mart/serving interface or propose a scoped expiring exception with owner and independent reviewer.
 5. Report lineage coverage separately from findings. A clean incomplete scan does not prove no bypass exists.
+6. Require an exact current published-contract registration; a mart/serving dataset name is insufficient. Resolve every physical SQL relation to the manifest and inspect inferred impact edges. Treat unknown routines and unsupported nested joins as incomplete work.
 
 ## Evidence and completion
 

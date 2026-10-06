@@ -4,6 +4,8 @@ An evidence-first data engineering harness for Relativity Space's #DATA workflow
 
 **Runnable app + CLI + 19 Claude skills + 9 engineering protocols.** All bundled data is synthetic. Project names, dataset patterns, ownership and policy are examples until configured against the actual environment.
 
+**This is a development workbench and static candidate checker.** Imported evidence cannot become ready-for-review or approved. See [hardening changes and remaining integration work](docs/HARDENING.md).
+
 ![Flightcheck mission control](docs/screenshots/mission-control.png)
 
 ## Start the app
@@ -62,7 +64,7 @@ Consumers use contracted marts or serving models. Internal staging/intermediate 
 # This is deliberately blocked: direct intermediate consumption + SELECT *.
 python -m flightcheck.cli --policy config/policy.yml audit-sql examples/legacy-consumer.sql
 
-# Clean published-interface example.
+# Published names alone no longer pass: register the exact reviewed interface first.
 python -m flightcheck.cli --policy config/policy.yml audit-sql examples/published-consumer.sql
 
 # Audit YOUR compiled dbt manifest; example fixture intentionally has bypasses and partial SQL coverage.
@@ -78,7 +80,9 @@ python -m flightcheck.cli scaffold flightcheck/data/model-example.json --directo
 python -m flightcheck.cli eval
 ```
 
-Global options (`--policy`, `--out`) precede the command. Exit **0** = completed without a blocking result; **1** = blocked/mismatch/inconclusive/failed or incomplete coverage; **2** = invalid input or execution error. Warnings/waivers produce `review`, not `clear`. A static result does not certify live data.
+Global options (`--policy`, `--out`) precede the command. Exit **0** = completed without a blocking result; **1** = blocked/mismatch/inconclusive/failed/unverified or incomplete coverage; **2** = invalid input or execution error. Warnings/waivers produce `review`, not `clear`. The stricter `check-candidate` command blocks any findings. A static result does not certify live data.
+
+Run `check-candidate` against the manifest and run results from the same dev `dbt build`, plus exported consumer SQL. It checks commit bindings, artifact age, complete model/test outcomes, lineage and consumer boundaries. [Candidate CI integration](docs/CANDIDATE-CI.md) includes the exact command and inventory format.
 
 Optional BigQuery dry run, after installing `.[bigquery]` and configuring approved ADC credentials:
 
@@ -102,9 +106,10 @@ See [architecture](docs/ARCHITECTURE.md), [testing](docs/TESTING.md), [integrati
 - No automatic BigQuery writes, production deployment, OpenMetadata publication, Jira changes or certification approvals.
 - SQL parsing and manifest inspection are static. Dynamic SQL, hidden view internals and out-of-manifest consumers require additional inventory. Missing compiled SQL is reported as incomplete coverage.
 - Local record comparisons are capped at 100,000 combined rows. Use partitioned warehouse reconciliation for larger populations; the SQL template is a starting point requiring reviewed identifiers and semantics.
-- Imported observations are **unattested**. Hashes provide identity/corruption checks, not signatures proving that a job ran. SQLite is local persistence, not immutable audit storage.
+- Imported observations are **unverified** even when supplied records agree. Missing or truncated population coverage produces **incomplete**. Hashes provide identity/corruption checks, not signatures proving that a job ran. SQLite is local persistence, not immutable audit storage.
 - Generated dbt files are scaffolds. Source mapping, surrogate-key resolution, incremental/SCD merge logic and actual warehouse execution remain required. Type 2 current-row tests assume an explicit tombstone-current policy.
-- HTTP defaults to loopback. Shared hosting requires `FLIGHTCHECK_TOKEN` and your SSO/TLS gateway; the shared token is not per-user authorization.
+- HTTP defaults to loopback with host/client checks. Shared hosting requires `FLIGHTCHECK_TOKEN`, exact `FLIGHTCHECK_ALLOWED_HOSTS` and your SSO/TLS gateway; the shared token is not per-user authorization.
+- Imported record/key samples are removed before API persistence and export. Counts remain available; synthetic demo witnesses remain visible. Local runs expire after 7 days (`FLIGHTCHECK_RETENTION_DAYS`). CLI output can contain witnesses: keep it in approved private storage. Retention is application cleanup, not guaranteed erasure of backups or old database pages.
 
 ## Development
 

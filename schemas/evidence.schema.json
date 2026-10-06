@@ -122,6 +122,17 @@
           "maxItems": 50000,
           "title": "Rows",
           "type": "array"
+        },
+        "population": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Population"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -136,6 +147,43 @@
         "rows"
       ],
       "title": "Observation",
+      "type": "object"
+    },
+    "Population": {
+      "additionalProperties": false,
+      "properties": {
+        "definition": {
+          "minLength": 10,
+          "title": "Definition",
+          "type": "string"
+        },
+        "population_id": {
+          "minLength": 3,
+          "title": "Population Id",
+          "type": "string"
+        },
+        "total_rows": {
+          "minimum": 0,
+          "title": "Total Rows",
+          "type": "integer"
+        },
+        "extraction_complete": {
+          "title": "Extraction Complete",
+          "type": "boolean"
+        },
+        "source_window_complete": {
+          "title": "Source Window Complete",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "definition",
+        "population_id",
+        "total_rows",
+        "extraction_complete",
+        "source_window_complete"
+      ],
+      "title": "Population",
       "type": "object"
     },
     "Stage": {
@@ -209,6 +257,32 @@
       "maxItems": 50,
       "title": "Stages",
       "type": "array"
+    },
+    "candidate_commit": {
+      "anyOf": [
+        {
+          "pattern": "^(?:[a-f0-9]{40}|[a-f0-9]{64})$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Candidate Commit"
+    },
+    "manifest_hash": {
+      "anyOf": [
+        {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Manifest Hash"
     }
   },
   "required": [

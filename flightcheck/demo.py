@@ -5,7 +5,7 @@ import sqlite3
 from datetime import datetime, timedelta, timezone
 
 from .common import digest
-from .evidence import Context, EvidenceBundle, Observation, Control
+from .evidence import Context, EvidenceBundle, Observation, Control, Population
 
 CASES = {
     "masked-loss": "Equal counts, dropped operation, duplicate join, changed cost",
@@ -46,10 +46,11 @@ def demo_bundle(case="masked-loss"):
     def observe(sql, relation):
         context = Context(environment="dev", project="synthetic-manufacturing", relation=relation, principal="local-demo", snapshot_id="fixture-v1")
         control_result = conn.execute("SELECT COUNT(*) FROM operation WHERE event_id = 'OP-001'").fetchone()[0]
+        rows = [dict(r) for r in conn.execute(sql).fetchall()]
         return Observation(context=context, expected_context=context.model_copy(), sql_hash=digest(sql), query_id=f"sqlite-{digest(sql)[:12]}", tool="sqlite3",
                            observed_at=now, data_as_of=now - timedelta(minutes=20),
                            control=Control(query_id="sqlite-control-op001", context_hash=digest(context.model_dump()), succeeded=True, expected=1, actual=control_result),
-                           rows=[dict(r) for r in conn.execute(sql).fetchall()])
+                           rows=rows, population=Population(definition="All operations in synthetic fixture-v1", population_id="fixture-v1-operations", total_rows=len(rows), extraction_complete=True, source_window_complete=True))
     left, right = observe(base, "fixture.baseline"), observe(candidate, "fixture.candidate")
     if case == "control-failure":
         right.control.actual = conn.execute("SELECT COUNT(*) FROM operation WHERE event_id='NO-SUCH-KEY'").fetchone()[0]

@@ -4,6 +4,11 @@ from flightcheck.policy import Policy, ExceptionRule
 from datetime import datetime, timedelta, timezone
 
 
+def registered_policy():
+    return Policy(published_contracts={name: {"owner": "fixture-owner", "contract_id": "fixture-only", "lineage_reviewed": True, "expires_at": datetime.now(timezone.utc)+timedelta(days=1)}
+                                      for name in ["demo.mart.events", "demo.mart.a", "demo.serving.b"]})
+
+
 def rules(sql, layer="consumer", policy=None):
     return {f["rule"] for f in audit_sql(sql, layer, policy)["findings"]}
 
@@ -27,17 +32,17 @@ def test_detects(sql, rule):
 
 
 def test_count_star_and_literals_are_not_projection_wildcards():
-    assert not rules("SELECT COUNT(*) AS records, 'SELECT * FROM staging.bad' AS note FROM demo.mart.events")
+    assert not rules("SELECT COUNT(*) AS records, 'SELECT * FROM staging.bad' AS note FROM demo.mart.events", policy=registered_policy())
 
 
 def test_cte_alias_shadowing_does_not_hide_qualified_relation():
-    result = audit_sql("WITH events AS (SELECT id FROM demo.mart.events) SELECT e.id FROM events e JOIN demo.staging.events s ON e.id=s.id")
+    result = audit_sql("WITH events AS (SELECT id FROM demo.mart.events) SELECT e.id FROM events e JOIN demo.staging.events s ON e.id=s.id", policy=registered_policy())
     assert {r["name"] for r in result["relations"]} == {"demo.mart.events", "demo.staging.events"}
     assert result["blocking"] == 1
 
 
 def test_nested_cte_scope_and_union():
-    result = audit_sql("WITH x AS (SELECT id FROM demo.mart.a) SELECT id FROM x UNION ALL SELECT id FROM demo.serving.b")
+    result = audit_sql("WITH x AS (SELECT id FROM demo.mart.a) SELECT id FROM x UNION ALL SELECT id FROM demo.serving.b", policy=registered_policy())
     assert result["status"] == "clear"
     assert len(result["relations"]) == 2
 

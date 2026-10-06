@@ -3,6 +3,7 @@ const { chromium } = require('playwright');
 const fs = require('node:fs');
 const path = require('node:path');
 const assert = require('node:assert/strict');
+const { execFileSync } = require('node:child_process');
 
 (async()=>{
   const output=path.resolve('.flightcheck/browser');fs.mkdirSync(output,{recursive:true});
@@ -27,10 +28,23 @@ const assert = require('node:assert/strict');
     }
     await page.locator('#case-select').selectOption('masked-loss');await page.getByRole('button',{name:'Run all gates'}).click();await page.locator('.review-summary .status.mismatch').waitFor();
     await page.screenshot({path:path.join(output,'investigation.png'),fullPage:true});
+    const imported=JSON.parse(execFileSync('python',['-c',"import json; from flightcheck.demo import demo_bundle; print(json.dumps(demo_bundle('clean').model_dump(mode='json')))"],{encoding:'utf8'}));
+    await page.locator('#evidence-file').setInputFiles({name:'evidence.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(imported))});
+    await page.locator('.review-summary .status.unverified').waitFor();
+    assert.equal(await page.locator('.gate.unverified').count(),3);
+    await page.getByText('Imported record samples were removed before storage and export.',{exact:false}).waitFor();
+    checks.push('Imported claims stay unverified and samples are redacted');
+    imported.left.rows=imported.left.rows.slice(0,1);imported.right.rows=imported.right.rows.slice(0,1);
+    await page.locator('#evidence-file').setInputFiles({name:'subset.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(imported))});
+    await page.locator('.review-summary .status.incomplete').waitFor();
+    await page.getByText('Population coverage is incomplete.',{exact:true}).waitFor();
+    checks.push('Matching truncated subsets show incomplete coverage');
     await page.getByRole('link',{name:'SQL & lineage'}).click();await page.getByRole('button',{name:'Audit SQL',exact:true}).click();
     await page.locator('#sql-results').getByText('SELECT STAR',{exact:true}).waitFor();
     await page.getByRole('button',{name:'Load published example'}).click();await page.getByRole('button',{name:'Audit SQL',exact:true}).click();
-    await page.locator('#sql-results .status.clear').waitFor();checks.push('SQL blocked and clear paths');
+    await page.locator('#sql-results').getByText('PUBLISHED CONTRACT',{exact:true}).waitFor();
+    await page.locator('#sql-editor').fill('SELECT 1 AS control');await page.getByRole('button',{name:'Audit SQL',exact:true}).click();
+    await page.locator('#sql-results .status.clear').waitFor();checks.push('SQL bypass, unregistered publication and static clear paths');
     await page.getByRole('link',{name:'Kimball studio'}).click();await page.getByRole('button',{name:'Validate & generate'}).click();
     await page.getByRole('button',{name:'Download ZIP'}).waitFor();
     const [download]=await Promise.all([page.waitForEvent('download'),page.getByRole('button',{name:'Download ZIP'}).click()]);

@@ -12,6 +12,8 @@ Run the gates in this order. A failed prerequisite means later inference is unsu
 
 The CLI `demo` runs controls and queries against a synthetic SQLite database. `evidence` validates supplied observations; it does not authenticate the warehouse job that allegedly produced them. Its hashes bind content, not truth. `diff` alone bypasses prerequisite gates and must never be presented as full evidence certification.
 
+Imported controls, freshness and authority are labeled `unverified`, never pass. Supply each observation's population definition/ID, total result rows, extraction completeness and source-window completeness. Missing declarations, mismatched scopes or truncated extraction yield `incomplete`, even when supplied rows agree. Declarations are not attestation: imported bundles cannot become ready-for-review. Bind candidate_commit and manifest_hash for handoff; retrieve actual jobs through the approved warehouse identity before promoting any claim.
+
 For live work, select a sentinel known to exist within the same source/time/RLS scope. `SELECT 1` tests SQL execution, not table access or population coverage. A table with legitimately zero rows needs independent authoritative population evidence; do not invent a positive sentinel. Record this as an investigation requiring review.
 
 Compare old/new implementations at the same logical cutoff, timezone, source versions and access policy. If a migration crosses projects, create and review an explicit equivalence mapping; the supplied evaluator conservatively requires matching projects. A row limit or sample is useful for debugging but cannot establish full parity. Summaries must name the compared population, excluded fields, numeric tolerances, timezone, and residual uncertainty.

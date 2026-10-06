@@ -13,6 +13,7 @@ from .modeling import ModelSpec, scaffold
 from .policy import load_policy
 from .reconcile import reconcile, trace_stages
 from .sql_audit import audit_sql, parse_query
+from .candidate import check_candidate
 
 
 def read_json(path):
@@ -32,6 +33,11 @@ def main(argv=None):
     sql.add_argument("--layer", default="consumer", choices=["source", "staging", "intermediate", "mart", "serving", "consumer"])
     manifest = sub.add_parser("audit-manifest")
     manifest.add_argument("path")
+    candidate = sub.add_parser("check-candidate", help="Check actual candidate artifacts; does not approve release")
+    candidate.add_argument("manifest")
+    candidate.add_argument("--run-results", required=True)
+    candidate.add_argument("--consumers", required=True)
+    candidate.add_argument("--commit", required=True)
     demo = sub.add_parser("demo")
     demo.add_argument("--case", choices=list(CASES), default="masked-loss")
     evidence = sub.add_parser("evidence")
@@ -65,6 +71,8 @@ def main(argv=None):
             result = audit_sql(Path(args.path).read_text(), args.layer, policy, args.path)
         elif args.command == "audit-manifest":
             result = audit_manifest(read_json(args.path), policy)
+        elif args.command == "check-candidate":
+            result = check_candidate(read_json(args.manifest), read_json(args.run_results), read_json(args.consumers), args.commit, policy)
         elif args.command == "demo":
             result = evaluate(demo_bundle(args.case), policy)
         elif args.command == "evidence":
@@ -103,7 +111,7 @@ def main(argv=None):
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(encoded + "\n")
         print(encoded)
-        return 1 if result.get("status") in {"blocked", "mismatch", "inconclusive", "failed"} or result.get("complete") is False else 0
+        return 1 if result.get("status") in {"blocked", "mismatch", "inconclusive", "failed", "unverified", "incomplete"} or result.get("complete") is False else 0
     except (ValueError, OSError, ImportError, KeyError) as exc:
         print(json.dumps({"status": "error", "message": str(exc)}))
         return 2

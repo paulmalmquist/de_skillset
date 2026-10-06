@@ -9,7 +9,7 @@ import pytest
 @pytest.fixture
 def client(tmp_path,monkeypatch):
     monkeypatch.delenv("FLIGHTCHECK_TOKEN",raising=False)
-    with TestClient(create_app(tmp_path/"runs.sqlite3")) as client:
+    with TestClient(create_app(tmp_path/"runs.sqlite3"), base_url="http://127.0.0.1") as client:
         yield client
 
 
@@ -49,7 +49,7 @@ def test_model_zip_contains_expected_files(client):
 
 def test_token_required_for_evidence_api(tmp_path,monkeypatch):
     monkeypatch.setenv("FLIGHTCHECK_TOKEN","test-token")
-    with TestClient(create_app(tmp_path/'token.sqlite3')) as c:
+    with TestClient(create_app(tmp_path/'token.sqlite3'), base_url="http://127.0.0.1") as c:
         assert c.get('/api/runs').status_code==401
         assert c.get('/api/runs',headers={'Authorization':'Bearer test-token'}).status_code==200
 

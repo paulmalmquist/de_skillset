@@ -103,9 +103,9 @@ def scaffold(spec: ModelSpec):
     for column in spec.columns:
         obj = column.model_dump()
         tests = []
-        if column.name in spec.keys:
+        if column.name in spec.keys or column.name in spec.business_keys:
             tests.append("not_null")
-            if len(spec.keys) == 1:
+            if column.name in spec.keys and len(spec.keys) == 1:
                 tests.append("unique")
         if column.name in refs:
             dim = refs[column.name]
@@ -124,6 +124,10 @@ def scaffold(spec: ModelSpec):
         f"tests/{spec.name}_grain.sql": f"SELECT {keys}, COUNT(*) AS row_count\nFROM {{{{ ref('{spec.name}') }}}}\nGROUP BY {keys}\nHAVING COUNT(*) > 1 OR {nulls}\n",
         f"contracts/{spec.name}.json": __import__("json").dumps(spec.model_dump(), indent=2) + "\n",
     }
+    # dbt evaluates Jinja inside SQL comments; the declaration identifies the singular
+    # test's intended coverage without requiring a third-party test package.
+    grain_meta = {"flightcheck": {"test_kind": "grain", "keys": spec.keys}}
+    files[f"tests/{spec.name}_grain.sql"] = "-- {{ config(meta=" + __import__("json").dumps(grain_meta) + ") }}\n" + files[f"tests/{spec.name}_grain.sql"]
     if spec.scd_type == 2:
         equality = " AND ".join(f"a.{k} = b.{k}" for k in spec.business_keys)
         different = " OR ".join(f"a.{k} != b.{k}" for k in spec.keys)
@@ -138,4 +142,6 @@ WHERE ({different})
         bk = ", ".join(spec.business_keys)
         files[f"tests/{spec.name}_current.sql"] = f"SELECT {bk}\nFROM {{{{ ref('{spec.name}') }}}}\nGROUP BY {bk}\nHAVING COUNTIF(is_current) != 1\n"
         files[f"tests/{spec.name}_intervals.sql"] = f"SELECT {keys}\nFROM {{{{ ref('{spec.name}') }}}}\nWHERE valid_from IS NULL OR is_current IS NULL OR (valid_to IS NOT NULL AND valid_to <= valid_from) OR (is_current != (valid_to IS NULL))\n"
+        business_nulls = " OR ".join(f"{key} IS NULL" for key in spec.business_keys)
+        files[f"tests/{spec.name}_business_keys.sql"] = f"SELECT {keys}\nFROM {{{{ ref('{spec.name}') }}}}\nWHERE {business_nulls}\n"
     return {"assessment": assessment, "files": files}

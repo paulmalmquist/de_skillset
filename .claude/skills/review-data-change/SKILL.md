@@ -15,6 +15,7 @@ Read `CLAUDE.md` and `config/policy.yml` at the repository root. Follow [the pro
 2. Check grain, hidden semantics, layer boundaries, schema evolution, security context and changed consumers.
 3. Require actual commands/job IDs and inspect negative cases, failed gates and incomplete coverage.
 4. Check evidence hashes against current code/config and require reruns after relevant changes.
+   Run the candidate artifact check from `docs/CANDIDATE-CI.md` inside the trusted dev build job. Require same-invocation outcomes, exact-key test coverage and consumer inventory; do not substitute the harness's own CI. Keep imported execution claims unverified until checked against authoritative jobs.
 5. Write approve-with-evidence or blocked-with-next-action through the normal review process; do not grant certification from local app status.
 
 ## Evidence and completion

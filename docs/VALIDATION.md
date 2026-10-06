@@ -1,4 +1,17 @@
-# Validation record · 2026-10-05
+# Validation record
+
+## Hardening verification · 2026-10-06 UTC
+
+- **101 pytest tests passed**, including the original behaviors plus adversarial SQL, manifest/test coverage, SCD2 NULL/history, evidence completeness, candidate CLI, host/auth and retention/redaction regressions.
+- **13/13 deterministic scenarios passed**; no expectations were loosened to disguise the reproduced failures. Existing positive SQL tests now explicitly register their synthetic interfaces.
+- **13 browser workflows passed**, including imported unverified evidence and matching truncated subsets, desktop navigation, model ZIP download and 390px mobile layout. No page/console errors. Machine-readable results: `browser-hardening-validation.json`.
+- **19 skills and 9 protocols** passed catalog/reference validation; browser JavaScript parsed successfully and `git diff --check` passed.
+- Independent engineering review reproduced and verified fixes for nested joins, filtered/nonblocking tests, incremental self-reads, hidden non-ephemeral dependencies, singular test metadata, compile-versus-build confusion and ignored failed result records. Regression tests cover these findings.
+- Generated SCD2 tests were executed on synthetic local SQL fixtures using SQLite compatibility functions. This is not a BigQuery adapter/build result.
+
+The live-environment exclusions below still apply. Original screenshots document the initial interface; the current browser verification record covers revised status/coverage behavior. GitHub CI separately runs the committed test suite.
+
+## Original implementation · 2026-10-05
 
 ## Executed
 

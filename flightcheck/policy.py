@@ -19,6 +19,13 @@ class ExceptionRule(StrictModel):
     expires_at: datetime
 
 
+class PublishedContract(StrictModel):
+    owner: str = Field(min_length=3)
+    contract_id: str = Field(min_length=3)
+    lineage_reviewed: bool
+    expires_at: datetime
+
+
 class Policy(StrictModel):
     version: str = "1"
     dialect: str = "bigquery"
@@ -33,6 +40,13 @@ class Policy(StrictModel):
     max_freshness_hours: float = Field(default=24, gt=0)
     max_evidence_age_hours: float = Field(default=4, gt=0)
     exceptions: list[ExceptionRule] = Field(default_factory=list)
+    published_contracts: dict[str, PublishedContract] = Field(default_factory=dict)
+
+    def publication_registered(self, relation, now=None):
+        entry = self.published_contracts.get(relation.lower())
+        now = now or datetime.now(timezone.utc)
+        return bool(entry and entry.lineage_reviewed and entry.expires_at.tzinfo
+                    and entry.expires_at > now)
 
     def classify(self, relation: str) -> str:
         matches = {layer for pattern, layer in self.relation_layers.items()
@@ -51,7 +65,7 @@ def load_policy(path: str | Path | None = None) -> Policy:
 def apply_exceptions(findings, policy: Policy, now=None):
     now = now or datetime.now(timezone.utc)
     extra = []
-    nonwaivable = {"SQL_PARSE", "SQL_UNCOMPILED", "SQL_READ_ONLY", "MANIFEST_FORMAT", "LINEAGE_INCOMPLETE", "LINEAGE_CYCLE"}
+    nonwaivable = {"SQL_PARSE", "SQL_UNCOMPILED", "SQL_READ_ONLY", "MANIFEST_FORMAT", "LINEAGE_INCOMPLETE", "LINEAGE_CYCLE", "ROUTINE_COVERAGE", "PUBLISHED_CONTRACT", "SQL_COVERAGE", "RELATION_IDENTITY", "MODEL_CONTRACT", "MODEL_TESTS"}
     for exception in policy.exceptions:
         expiry = exception.expires_at
         if expiry.tzinfo is None or expiry <= now or exception.owner == exception.reviewer:

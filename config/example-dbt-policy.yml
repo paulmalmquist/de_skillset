@@ -1,3 +1,4 @@
+# Synthetic fixture registrations only; do not copy these approvals into a live policy.
 version: '1'
 dialect: bigquery
 relation_layers:
@@ -36,3 +37,19 @@ allowed_dependencies:
 max_freshness_hours: 24.0
 max_evidence_age_hours: 4.0
 exceptions: []
+published_contracts:
+  synthetic.flightcheck_demo_mart.dim_work_order:
+    owner: synthetic-fixture-owner
+    contract_id: synthetic-example-v1
+    lineage_reviewed: true
+    expires_at: '2099-01-01T00:00:00Z'
+  synthetic.flightcheck_demo_mart.fct_operation_event:
+    owner: synthetic-fixture-owner
+    contract_id: synthetic-example-v1
+    lineage_reviewed: true
+    expires_at: '2099-01-01T00:00:00Z'
+  synthetic.flightcheck_demo_serving.rpt_operations:
+    owner: synthetic-fixture-owner
+    contract_id: synthetic-example-v1
+    lineage_reviewed: true
+    expires_at: '2099-01-01T00:00:00Z'

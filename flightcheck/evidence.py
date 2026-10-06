@@ -26,6 +26,14 @@ class Control(StrictModel):
     actual: int = Field(ge=0)
 
 
+class Population(StrictModel):
+    definition: str = Field(min_length=10)
+    population_id: str = Field(min_length=3)
+    total_rows: int = Field(ge=0)
+    extraction_complete: bool
+    source_window_complete: bool
+
+
 class Observation(StrictModel):
     context: Context
     expected_context: Context
@@ -36,6 +44,7 @@ class Observation(StrictModel):
     data_as_of: datetime
     control: Control
     rows: list[dict] = Field(max_length=50000)
+    population: Population | None = None
 
 
 class Stage(StrictModel):
@@ -51,6 +60,8 @@ class EvidenceBundle(StrictModel):
     keys: list[str] = Field(min_length=1)
     tolerances: dict[str, float] = Field(default_factory=dict)
     stages: list[Stage] = Field(default_factory=list, max_length=50)
+    candidate_commit: str | None = Field(default=None, pattern=r"^(?:[a-f0-9]{40}|[a-f0-9]{64})$")
+    manifest_hash: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
 
 
 GATES = [
@@ -72,7 +83,21 @@ def evaluate(bundle: EvidenceBundle, policy=None, now=None):
               "gates": gates, "status": "blocked", "diff": None, "trace": None,
               "certified": False, "scope": "Evidence review only. Hashes identify inputs; they do not attest that imported observations are truthful."}
     sides = (("left", bundle.left), ("right", bundle.right))
+    imported = bundle.provenance == "imported-unattested"
+    coverage = []
+    for label, obs in sides:
+        p = obs.population
+        if p is None or not p.extraction_complete or not p.source_window_complete or p.total_rows != len(obs.rows):
+            coverage.append(f"{label}: full extraction and source-window completeness are not established")
+    if bundle.left.population and bundle.right.population:
+        if (bundle.left.population.population_id, bundle.left.population.definition) != (bundle.right.population.population_id, bundle.right.population.definition):
+            coverage.append("Compared populations have different definitions/identifiers")
+    result["coverage"] = {"complete": not coverage, "issues": coverage, "attested": False}
+    result["candidate_commit"] = bundle.candidate_commit
+    result["manifest_hash"] = bundle.manifest_hash
     def mark(index, status, detail):
+        if imported and index <= 2 and status == "pass":
+            status, detail = "unverified", "Reported only; warehouse execution is not authenticated. " + detail
         gates[index].update(status=status, detail=detail)
     for label, obs in sides:
         control = obs.control
@@ -104,7 +129,9 @@ def evaluate(bundle: EvidenceBundle, policy=None, now=None):
     if diff["status"] == "equal":
         mark(3, "pass", f"{diff['matched_unique_keys']} unique records agree at the declared grain and tolerances.")
         mark(4, "not_applicable", "No record discrepancy was found in this comparison scope.")
-        result["status"] = "ready_for_review"
+        result["status"] = "incomplete" if coverage else "unverified" if imported else "ready_for_review"
+        if coverage:
+            mark(3, "needs_evidence", "Supplied rows agree, but population coverage is incomplete: " + "; ".join(coverage))
     elif diff["status"] == "inconclusive":
         mark(3, "fail", "Both result sets are empty; no positive business population was compared.")
     else:

@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "checks": [
+    "Desktop dashboard and graph interaction",
+    "Investigation masked-loss",
+    "Investigation control-failure",
+    "Investigation stale",
+    "Investigation wrong-environment",
+    "Investigation clean",
+    "Imported claims stay unverified and samples are redacted",
+    "Matching truncated subsets show incomplete coverage",
+    "SQL bypass, unregistered publication and static clear paths",
+    "Model scaffold and actual ZIP download",
+    "Skill search and modal",
+    "Evaluations and persistent ledger",
+    "390px mobile layout"
+  ],
+  "console_errors": [],
+  "scope": "Synthetic local app verification; no live warehouse execution or certification"
+}

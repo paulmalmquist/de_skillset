@@ -15,6 +15,7 @@ Read `CLAUDE.md` and `config/policy.yml` at the repository root. Follow [the pro
 2. Run python -m flightcheck.cli diff LEFT.json RIGHT.json --keys event_id for bounded record sets.
 3. Inspect missing and added keys, per-column differences, NULL versus missing fields, invalid keys and duplicates. Never pair duplicate keys arbitrarily.
 4. Use counts only as a summary. Both-empty comparisons are inconclusive; samples do not establish whole-population parity.
+   Require population definition/ID, total returned rows, extraction completeness and source-window completeness on both observations. Matching subsets remain incomplete; imported full populations remain unverified until authoritative execution is established.
 5. Output one record witness per failure class and bind the report to query/code/policy hashes.
 
 ## Evidence and completion

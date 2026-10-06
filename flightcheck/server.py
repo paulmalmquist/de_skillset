@@ -10,6 +10,7 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse, Response
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import Field
 
 from .common import StrictModel
@@ -45,11 +46,18 @@ def create_app(db_path=None, policy_path=None):
     store = RunStore(db_path)
     policy = load_policy(policy_path or os.getenv("FLIGHTCHECK_POLICY"))
     token = os.getenv("FLIGHTCHECK_TOKEN", "")
+    allowed_hosts = os.getenv("FLIGHTCHECK_ALLOWED_HOSTS", "localhost,127.0.0.1,[::1]").split(",")
+    if not token and any(h.strip() not in {"localhost", "127.0.0.1", "[::1]"} for h in allowed_hosts):
+        raise ValueError("A token is required for non-loopback allowed hosts")
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=[h.strip() for h in allowed_hosts])
 
     @app.middleware("http")
     async def guard(request: Request, call_next):
+        if not token and request.client and request.client.host not in {"127.0.0.1", "::1", "testclient"}:
+            return JSONResponse({"detail": "A token is required for remote clients."}, status_code=403)
         if request.url.path.startswith("/api/") and token:
-            supplied = request.headers.get("Authorization", "").removeprefix("Bearer ")
+            header = request.headers.get("Authorization", "")
+            supplied = header[7:] if header.startswith("Bearer ") else ""
             if not hmac.compare_digest(supplied.encode(), token.encode()):
                 return JSONResponse({"detail": "A valid access token is required."}, status_code=401)
         if request.method in {"POST", "PUT", "PATCH", "DELETE"}:
